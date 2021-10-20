@@ -27,8 +27,13 @@ public class CnesCarregamentoDadosApplication {
 	@EventListener(ApplicationReadyEvent.class)
 	private void processa() {
 		carregaBD.carregaEstados(IN_DIR_ESTADOS);
+		System.out.println("Terminou ler Estados");
 		carregaBD.carregaMunicipios(IN_DIR_MUNICIPIOS);
+		System.out.println("Terminou ler Municipios");
 		carregaBD.carregaEstabelecimentos(IN_DIR_ESTABELECIMENTOS);
+		System.out.println("Terminou ler Estabelecimentos");
 		carregaBD.carregaEnderecos(IN_DIR_ENDERECOS);
+		System.out.println("Terminou ler Enderecos");
+		carregaBD.grava();
 	}
 }

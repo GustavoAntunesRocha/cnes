@@ -1,6 +1,7 @@
 package br.com.gustavo.cnesCarregamentoDados.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,13 +22,12 @@ public class Estabelecimento {
 	private String fantasia;
 	
 	@OneToMany
-	(mappedBy = "estabelecimento")
-	private List<Endereco> endereco;
+	private Set<Endereco> endereco = new HashSet<Endereco>();
 	
 	public Estabelecimento() {}
 
 	public Estabelecimento(int codigoCnes, String codigoUnidade, String cnpj, String razaoSocial, String fantasia,
-			List<Endereco> endereco) {
+			Set<Endereco> endereco) {
 		super();
 		this.codigoCnes = codigoCnes;
 		this.codigoUnidade = codigoUnidade;
@@ -77,11 +77,11 @@ public class Estabelecimento {
 		this.fantasia = fantasia;
 	}
 
-	public List<Endereco> getEndereco() {
+	public Set<Endereco> getEndereco() {
 		return endereco;
 	}
 
-	public void setEndereco(List<Endereco> endereco) {
+	public void setEndereco(Set<Endereco> endereco) {
 		this.endereco = endereco;
 	}
 	

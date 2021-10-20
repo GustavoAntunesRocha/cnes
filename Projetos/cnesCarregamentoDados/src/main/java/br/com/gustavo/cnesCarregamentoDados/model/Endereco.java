@@ -14,10 +14,6 @@ public class Endereco {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int codigo;
 	
-	@JoinColumn(name = "co_estabelecimento")
-	@ManyToOne
-	private Estabelecimento estabelecimento;
-	
 	private String codigoEstabelecimento;
 	
 	private String nome;
@@ -52,11 +48,10 @@ public class Endereco {
 	
 	public Endereco() {}
 
-	public Endereco(Estabelecimento estabelecimento, String codigoEstabelecimento, String nome, int tipoLogradouro, String nomeLogradouro,
+	public Endereco(String codigoEstabelecimento, String nome, int tipoLogradouro, String nomeLogradouro,
 			String numero, String complemento, String bairro, String cep, Municipio municipio, String ddd, String telefone,
 			String fax, String email, String dataAtivacao, String dataDesativacao) {
 		super();
-		this.estabelecimento = estabelecimento;
 		this.codigoEstabelecimento = codigoEstabelecimento;
 		this.nome = nome;
 		this.tipoLogradouro = tipoLogradouro;
@@ -82,13 +77,6 @@ public class Endereco {
 		this.codigo = codigo;
 	}
 
-	public Estabelecimento getEstabelecimento() {
-		return estabelecimento;
-	}
-
-	public void setEstabelecimento(Estabelecimento estabelecimento) {
-		this.estabelecimento = estabelecimento;
-	}
 
 	public String getCodigoEstabelecimento() {
 		return codigoEstabelecimento;

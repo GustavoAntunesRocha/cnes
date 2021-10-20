@@ -6,8 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +36,17 @@ public class CarregaBD {
 	@Autowired
 	private MunicipioRepository municipioRepository;
 	
+	private Set<Estado> estados = new HashSet<Estado>();
+	private Set<Municipio> municipios = new HashSet<Municipio>();
+	private Set<Endereco> enderecos = new HashSet<Endereco>();
+	private Set<Estabelecimento> estabelecimentos = new HashSet<Estabelecimento>();
+	
+	public void grava() {
+		estadoRepository.saveAll(estados);
+		municipioRepository.saveAll(municipios);
+		enderecoRepository.saveAll(enderecos);
+		estabelecimentoRepository.saveAll(estabelecimentos);
+	}
 
 	public void carregaEstabelecimentos(String path) {
 		BufferedReader br = null;
@@ -49,11 +60,29 @@ public class CarregaBD {
 
 				linha = removeSinais(linha);
 				String[] aux = linha.split(csvDivisor);
-				List<Endereco> enderecos = new ArrayList<>();
-				enderecos = enderecoRepository.findByCodigoEstabelecimento(aux[0]);
-				Estabelecimento ocupacao = new Estabelecimento(Integer.parseInt(aux[1]), aux[0], aux[2], aux[5], aux[6],
+				Set<Endereco> enderecos = new HashSet<Endereco>();
+				//enderecos = enderecoRepository.findByCodigoEstabelecimento(aux[0]);
+				Endereco endereco = new Endereco();
+				endereco.setCodigoEstabelecimento(aux[0]);
+				endereco.setNomeLogradouro(aux[7]);
+				endereco.setNumero(aux[8]);
+				endereco.setComplemento(aux[9]);
+				endereco.setBairro(aux[10]);
+				endereco.setCep(aux[11]);
+				endereco.setTelefone(aux[16]);
+				endereco.setEmail(aux[18]);
+				//endereco.setMunicipio(municipioRepository.findById(Integer.parseInt(aux[31])));
+				for(Municipio municipio : this.municipios) {
+					if(municipio.getCodigo() == Integer.parseInt(aux[31])) {
+						endereco.setMunicipio(municipio);
+						break;
+					}
+				}
+				enderecos.add(endereco);
+				Estabelecimento estabelecimento = new Estabelecimento(Integer.parseInt(aux[1]), aux[0], aux[2], aux[5], aux[6],
 						enderecos);
-				estabelecimentoRepository.save(ocupacao);
+				this.enderecos.add(endereco);
+				this.estabelecimentos.add(estabelecimento);
 
 			}
 
@@ -85,7 +114,7 @@ public class CarregaBD {
 				linha = removeSinais(linha);
 				String[] aux = linha.split(csvDivisor);
 				Estado estado = new Estado(Integer.parseInt(aux[0]), aux[1], aux[2]);
-				estadoRepository.save(estado);
+				this.estados.add(estado);
 
 			}
 
@@ -118,7 +147,7 @@ public class CarregaBD {
 				String[] aux = linha.split(csvDivisor);
 				Municipio municipio = new Municipio(Integer.parseInt(aux[0]), aux[1],
 						estadoRepository.findBySigla(aux[2]));
-				municipioRepository.save(municipio);
+				this.municipios.add(municipio);
 
 			}
 
@@ -148,12 +177,13 @@ public class CarregaBD {
 			while ((linha = br.readLine()) != null) {
 				linha = removeSinais(linha);
 				String[] aux = linha.split(csvDivisor);
-				Endereco endereco = new Endereco(
-						estabelecimentoRepository.findByCodigoUnidade(aux[0]), aux[0], aux[2], Integer.parseInt(aux[3]),
+				
+				//Estabelecimento estabelecimento = estabelecimentoRepository.findByCodigoUnidade(aux[0]);
+				Endereco endereco = new Endereco(aux[0], aux[2], Integer.parseInt(aux[3]),
 						aux[4], aux[5], aux[6], aux[7], aux[8], municipioRepository.findById(Integer.parseInt(aux[9])),
 						aux[10], aux[11], aux[12], aux[13], aux[14], aux[15]);
-				enderecoRepository.save(endereco);
-
+				this.enderecos.add(endereco);
+				
 			}
 
 		} catch (FileNotFoundException e) {
