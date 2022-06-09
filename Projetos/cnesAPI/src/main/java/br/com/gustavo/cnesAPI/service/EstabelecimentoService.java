@@ -23,6 +23,10 @@ public class EstabelecimentoService {
 	public Estabelecimento buscaPorCodigoCNES(int codigoCNES) {
 		return estabelecimentoRepository.findByCodigoCnes(codigoCNES);
 	}
+	
+	public boolean existePorCNES(int codigoCNES) {
+		return estabelecimentoRepository.existsById(codigoCNES);
+	}
 
 	public Estabelecimento buscaPorCNPJ(String cnpj) {
 		return estabelecimentoRepository.findByCnpj(cnpj);

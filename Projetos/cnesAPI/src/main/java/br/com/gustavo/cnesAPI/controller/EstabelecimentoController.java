@@ -35,6 +35,12 @@ public class EstabelecimentoController {
 		return null;
 	}
 	
+	@GetMapping("/estabelecimento/codigoCnes/{codigoCnes}")
+	public boolean getCodigoCNES(@PathVariable String codigoCnes) {
+		boolean existe = service.existePorCNES(Integer.parseInt(codigoCnes));
+		return existe;
+	}
+	
 	@GetMapping("/estabelecimento/busca/razaoSocial/{razaoSocial}")
 	public String getEstabelecimentoRazaoSocial(@PathVariable String razaoSocial) {
 		Set<Estabelecimento> estabelecimentos = service.buscaPorRazaoSocial(razaoSocial);
