@@ -1,7 +1,6 @@
 package br.com.gustavo.cnesAPI.model;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -14,7 +13,7 @@ public class Municipio {
 	
 	private String nome;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "co_estado")
 	private Estado estado;
 	

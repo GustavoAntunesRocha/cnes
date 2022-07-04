@@ -1,34 +1,46 @@
 package br.com.gustavo.cnesAPI.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 public class Estabelecimento {
-	
-	@Id
-	private int codigoCnes;
-	
-	private String codigoUnidade;
-	
-	private String cnpj;
-	
-	private String razaoSocial;
-	
-	private String fantasia;
-	
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private Set<Endereco> endereco = new HashSet<Endereco>();
-	
-	public Estabelecimento() {}
 
-	public Estabelecimento(int codigoCnes, String codigoUnidade, String cnpj, String razaoSocial, String fantasia,
+	
+	private long codigoCnes;
+
+	@Id
+	private String codigoUnidade;
+
+	private String cnpj;
+
+	private String razaoSocial;
+
+	private String fantasia;
+
+	
+	@OneToMany
+	private Set<Endereco> endereco = new HashSet<Endereco>();
+
+	@JsonManagedReference
+	@OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL)
+	private List<ProfissionalEstabelecimento> profissionais = new ArrayList<>();
+
+
+	public Estabelecimento() {
+	}
+
+	public Estabelecimento(long codigoCnes, String codigoUnidade, String cnpj, String razaoSocial, String fantasia,
 			Set<Endereco> endereco) {
 		super();
 		this.codigoCnes = codigoCnes;
@@ -39,11 +51,11 @@ public class Estabelecimento {
 		this.endereco = endereco;
 	}
 
-	public int getCodigoCnes() {
+	public long getCodigoCnes() {
 		return codigoCnes;
 	}
 
-	public void setCodigoCnes(int codigoCnes) {
+	public void setCodigoCnes(long codigoCnes) {
 		this.codigoCnes = codigoCnes;
 	}
 
@@ -86,7 +98,30 @@ public class Estabelecimento {
 	public void setEndereco(Set<Endereco> endereco) {
 		this.endereco = endereco;
 	}
-	
-	
-	
+
+	public List<ProfissionalEstabelecimento> getProfissionais() {
+		return profissionais;
+	}
+
+	public void setProfissionais(List<ProfissionalEstabelecimento> profissionais) {
+		this.profissionais = profissionais;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(codigoCnes);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Estabelecimento other = (Estabelecimento) obj;
+		return codigoCnes == other.codigoCnes;
+	}
+
 }

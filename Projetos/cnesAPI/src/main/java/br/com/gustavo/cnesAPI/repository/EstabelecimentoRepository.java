@@ -12,7 +12,7 @@ import br.com.gustavo.cnesAPI.model.Estabelecimento;
 @Repository
 public interface EstabelecimentoRepository extends CrudRepository<Estabelecimento, Integer>{
 	
-	Estabelecimento findByCodigoCnes(int codigoCnes);
+	Estabelecimento findByCodigoCnes(long codigoCnes);
 
 	Estabelecimento findByCodigoUnidade(String codigoUnidade);
 	
@@ -27,4 +27,6 @@ public interface EstabelecimentoRepository extends CrudRepository<Estabeleciment
 	List<Estabelecimento> findByEnderecoMunicipioNome(String nome);
 	
 	List<Estabelecimento> findByEnderecoMunicipioEstadoDescricao(String nome);
+	
+	boolean existsByCodigoCnes(long cnes);
 }

@@ -1,5 +1,6 @@
 package br.com.gustavo.cnesAPI.service;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -9,7 +10,13 @@ import org.springframework.stereotype.Service;
 
 import br.com.gustavo.cnesAPI.model.Endereco;
 import br.com.gustavo.cnesAPI.model.Estabelecimento;
+import br.com.gustavo.cnesAPI.model.ProfissionalEstabelecimento;
 import br.com.gustavo.cnesAPI.repository.EstabelecimentoRepository;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonWriter;
 
 @Service
 public class EstabelecimentoService {
@@ -20,12 +27,15 @@ public class EstabelecimentoService {
 	@Autowired
 	private EnderecoService enderecoService;
 
-	public Estabelecimento buscaPorCodigoCNES(int codigoCNES) {
+	@Autowired
+	private ProfissionalEstabelecimentoService profissionalEstabelecimentoService;
+
+	public Estabelecimento buscaPorCodigoCNES(long codigoCNES) {
 		return estabelecimentoRepository.findByCodigoCnes(codigoCNES);
 	}
-	
-	public boolean existePorCNES(int codigoCNES) {
-		return estabelecimentoRepository.existsById(codigoCNES);
+
+	public boolean existePorCNES(long codigoCnes) {
+		return estabelecimentoRepository.existsByCodigoCnes(codigoCnes);
 	}
 
 	public Estabelecimento buscaPorCNPJ(String cnpj) {
@@ -54,10 +64,38 @@ public class EstabelecimentoService {
 		estabelecimentos = estabelecimentoRepository.findByEnderecoMunicipioNome(nomeMunicipio);
 		return estabelecimentos;
 	}
-	
-	public List<Estabelecimento> buscaPorNomeEstado(String nomeEstado){
+
+	public List<Estabelecimento> buscaPorNomeEstado(String nomeEstado) {
 		List<Estabelecimento> estabelecimentos = new ArrayList<>();
 		estabelecimentos = estabelecimentoRepository.findByEnderecoMunicipioEstadoDescricao(nomeEstado);
 		return estabelecimentos;
+	}
+
+	public List<Estabelecimento> buscaPorProfissionalCns(String cns) {
+		List<ProfissionalEstabelecimento> profissionalEstabelecimentoList = profissionalEstabelecimentoService
+				.buscaPorCns(cns);
+		List<Estabelecimento> estabelecimentos = new ArrayList<>();
+		for (ProfissionalEstabelecimento profissionalEstabelecimento : profissionalEstabelecimentoList) {
+			estabelecimentos.add(profissionalEstabelecimento.getEstabelecimento());
+		}
+		return estabelecimentos;
+	}
+
+	public String toJson(List<Estabelecimento> estabelecimentos) {
+		JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+		JsonObject jsonObj;
+		for (Estabelecimento estabelecimento : estabelecimentos) {
+			arrayBuilder.add(Json.createObjectBuilder().add("nome fantasia", estabelecimento.getFantasia())
+					.add("razão social", estabelecimento.getRazaoSocial()).add("cnes", estabelecimento.getCodigoCnes())
+					.add("cnpj", estabelecimento.getCnpj()).add("codigo unidade", estabelecimento.getCodigoUnidade())
+					.build());
+		}
+		JsonArray arr = arrayBuilder.build();
+		jsonObj = Json.createObjectBuilder().add("estabelecimentos", arr).build();
+		StringWriter stringWriter = new StringWriter();
+		JsonWriter writer = Json.createWriter(stringWriter);
+		writer.writeObject(jsonObj);
+		writer.close();
+		return stringWriter.getBuffer().toString();
 	}
 }

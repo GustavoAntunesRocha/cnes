@@ -16,13 +16,19 @@ import br.com.gustavo.cnesAPI.model.Estabelecimento;
 import br.com.gustavo.cnesAPI.service.EstabelecimentoService;
 
 @RestController
-@RequestMapping("/cnes")
+@RequestMapping("/estabelecimento")
 public class EstabelecimentoController {
 
 	@Autowired
 	private EstabelecimentoService service;
-	
-	@GetMapping("/estabelecimento/busca/codigoCnes/{codigoCnes}")
+
+	@GetMapping("/busca/cns/{cns}")
+	public String getProfissionalCns(@PathVariable String cns) {
+		List<Estabelecimento> estabelecimentos = service.buscaPorProfissionalCns(cns);
+		return service.toJson(estabelecimentos);
+	}
+
+	@GetMapping("/busca/codigoCnes/{codigoCnes}")
 	public String getEstabelecimentoCodigoCNES(@PathVariable String codigoCnes) {
 		Estabelecimento estabelecimento = service.buscaPorCodigoCNES(Integer.parseInt(codigoCnes));
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -34,14 +40,14 @@ public class EstabelecimentoController {
 		}
 		return null;
 	}
-	
-	@GetMapping("/estabelecimento/codigoCnes/{codigoCnes}")
+
+	@GetMapping("/codigoCnes/{codigoCnes}")
 	public boolean getCodigoCNES(@PathVariable String codigoCnes) {
 		boolean existe = service.existePorCNES(Integer.parseInt(codigoCnes));
 		return existe;
 	}
-	
-	@GetMapping("/estabelecimento/busca/razaoSocial/{razaoSocial}")
+
+	@GetMapping("/busca/razaoSocial/{razaoSocial}")
 	public String getEstabelecimentoRazaoSocial(@PathVariable String razaoSocial) {
 		Set<Estabelecimento> estabelecimentos = service.buscaPorRazaoSocial(razaoSocial);
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -53,8 +59,8 @@ public class EstabelecimentoController {
 		}
 		return null;
 	}
-	
-	@GetMapping("/estabelecimento/busca/nomeFatasia/{nomeFatasia}")
+
+	@GetMapping("/busca/nomeFatasia/{nomeFatasia}")
 	public String getEstabelecimentoNomeFantasia(@PathVariable String nomeFatasia) {
 		Set<Estabelecimento> estabelecimentos = service.buscaPorFantasia(nomeFatasia);
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -66,8 +72,8 @@ public class EstabelecimentoController {
 		}
 		return null;
 	}
-	
-	@GetMapping("/estabelecimento/busca/cnpj/{cnpj}")
+
+	@GetMapping("/busca/cnpj/{cnpj}")
 	public String getEstabelecimentoCnpj(@PathVariable String cnpj) {
 		Estabelecimento estabelecimentos = service.buscaPorCNPJ(cnpj);
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -79,8 +85,8 @@ public class EstabelecimentoController {
 		}
 		return null;
 	}
-	
-	@GetMapping("/estabelecimento/busca/municipio/nome/{nomeMunicipio}")
+
+	@GetMapping("/busca/municipio/nome/{nomeMunicipio}")
 	public String getEstabelecimentoMunicipioNome(@PathVariable String nomeMunicipio) {
 		List<Estabelecimento> estabelecimentos = service.buscaPorNomeMunicipio(nomeMunicipio);
 		ObjectMapper objectMapper = new ObjectMapper();
