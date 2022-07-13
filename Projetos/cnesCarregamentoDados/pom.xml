@@ -45,6 +45,15 @@
 			<artifactId>postgresql</artifactId>
 			<version>42.4.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-core -->
+		<!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
+		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>3.8.0</version>
+		</dependency>
+
+
 
 	</dependencies>
 
