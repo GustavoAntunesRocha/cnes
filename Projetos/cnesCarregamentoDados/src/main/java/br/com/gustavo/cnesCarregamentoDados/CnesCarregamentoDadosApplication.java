@@ -24,6 +24,9 @@ public class CnesCarregamentoDadosApplication implements CommandLineRunner {
 
 	@Autowired
 	private CarregaBD carregaBD;
+	
+	@Autowired
+	private GeraArquivos geraArquivos;
 
 	public static void main(String[] args) {
 		SpringApplication.run(CnesCarregamentoDadosApplication.class, args);
@@ -36,7 +39,9 @@ public class CnesCarregamentoDadosApplication implements CommandLineRunner {
 		System.out.println("| Opção 1 - Baixar e atualizar base de dados");
 		System.out.println("| Opção 2 - Atualizar banco da dados");
 		System.out.println("| Opção 3 - Somente baixar base de dados");
-		System.out.println("| Opção 4 - Sair");
+		System.out.println("| Opção 4 - Baixar e criar base em arquivos");
+		System.out.println("| Opção 5 - Somente criar base em arquivos");
+		System.out.println("| Opção 6 - Sair");
 		System.out.println("|-----------------------------");
 		System.out.println("Digite uma opção: ");
 		int escolha = menu.nextInt();
@@ -68,6 +73,18 @@ public class CnesCarregamentoDadosApplication implements CommandLineRunner {
 				return;
 			}
 			case 4:{
+				Scanner menu = new Scanner(System.in);
+				System.out.println("Digite a url base: (Ex.: ftp.datasus.gov.br)");
+				String ultimaVersao = FtpClient.atualizarCnes(menu.next().trim().toLowerCase(), "./data/");
+				menu.close();
+				processaArquivos(ultimaVersao);
+				return;
+			}
+			case 5:{
+				processaArquivos(null);
+				return;
+			}
+			case 6:{
 				return;
 			}
 			default:
@@ -75,6 +92,32 @@ public class CnesCarregamentoDadosApplication implements CommandLineRunner {
 			}
 			
 		}
+	}
+	
+	private void processaArquivos(String ultimaVersao) {
+		if(ultimaVersao == null) {
+			File fileAux = new File(BASE_PATH);
+			String[] fileList = fileAux.list();
+			for(String fileName : fileList) {
+				if(fileName.startsWith("tbEstado")) {
+					ultimaVersao = fileName.substring(8, 14);
+				}
+			}
+		}
+		geraArquivos.carregaEstados(IN_DIR_ESTADOS + ultimaVersao + ".csv");
+		System.out.println("Terminou gravar Estados");
+		geraArquivos.carregaMunicipios(IN_DIR_MUNICIPIOS + ultimaVersao + ".csv");
+		System.out.println("Terminou gravar Municipios");
+		geraArquivos.carregaEnderecos(IN_DIR_ENDERECOS + ultimaVersao + ".csv");
+		System.out.println("Terminou gravar Endereços");
+		geraArquivos.carregaEstabelecimentos(IN_DIR_ESTABELECIMENTOS + ultimaVersao + ".csv");
+		System.out.println("Terminou gravar Estabelecimentos");
+		geraArquivos.carregaCbos(IN_DIR_CBO + ultimaVersao + ".csv");
+		System.out.println("Terminou gravar CBOs");
+		geraArquivos.carregaProfissionais(IN_DIR_PROFISSIONAIS + ultimaVersao + ".csv");
+		System.out.println("Terminou gravar Profissionais");
+		geraArquivos.carregaRelacaoProfissionalEstabelecimento(IN_DIR_RL_PROFISSIONAIS_ESTABELECIMENTO + ultimaVersao + ".csv");
+		
 	}
 
 	private void processa(String ultimaVersao) {
@@ -84,7 +127,7 @@ public class CnesCarregamentoDadosApplication implements CommandLineRunner {
 			String[] fileList = fileAux.list();
 			for(String fileName : fileList) {
 				if(fileName.startsWith("tbEstado")) {
-					ultimaVersao = fileName.substring(8, 13);
+					ultimaVersao = fileName.substring(8, 14);
 				}
 			}
 		}

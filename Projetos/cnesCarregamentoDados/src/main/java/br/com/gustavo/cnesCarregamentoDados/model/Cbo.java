@@ -1,12 +1,18 @@
 package br.com.gustavo.cnesCarregamentoDados.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class Cbo {
+public class Cbo implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	private String codigo;
@@ -76,6 +82,12 @@ public class Cbo {
 		Cbo other = (Cbo) obj;
 		return Objects.equals(codigo, other.codigo) && Objects.equals(descricao, other.descricao)
 				&& regulamentado == other.regulamentado && tipoSaude == other.tipoSaude;
+	}
+
+	@Override
+	public String toString() {
+		return codigo + "," + descricao + "," + tipoSaude + ","
+				+ regulamentado;
 	}
 
 }

@@ -1,5 +1,7 @@
 package br.com.gustavo.cnesCarregamentoDados.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,7 +10,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Endereco {
+public class Endereco implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -196,6 +203,15 @@ public class Endereco {
 
 	public void setDataDesativacao(String dataDesativacao) {
 		this.dataDesativacao = dataDesativacao;
+	}
+
+	@Override
+	public String toString() {
+		return codigo + "," + codigoEstabelecimento + "," + nome
+				+ "," + tipoLogradouro + "," + nomeLogradouro + "," + numero
+				+ "," + complemento + "," + bairro + "," + cep + "," + municipio
+				+ "," + ddd + "," + telefone + "," + fax + "," + email + ","
+				+ dataAtivacao + "," + dataDesativacao;
 	}
 	
 	

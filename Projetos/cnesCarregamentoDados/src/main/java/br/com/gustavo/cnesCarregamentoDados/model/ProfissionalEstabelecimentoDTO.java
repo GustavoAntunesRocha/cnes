@@ -1,7 +1,14 @@
 package br.com.gustavo.cnesCarregamentoDados.model;
 
-public class ProfissionalEstabelecimentoDTO {
+import java.io.Serializable;
+
+public class ProfissionalEstabelecimentoDTO implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private String profissionaisCodigo;
 	
 	private String estabelecimentosCodigo;
@@ -37,6 +44,12 @@ public class ProfissionalEstabelecimentoDTO {
 
 	public void setCbo(String cbo) {
 		this.cbo = cbo;
+	}
+
+	@Override
+	public String toString() {
+		return profissionaisCodigo
+				+ "," + estabelecimentosCodigo + "," + cbo;
 	}
 
 }

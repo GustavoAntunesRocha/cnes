@@ -1,5 +1,6 @@
 package br.com.gustavo.cnesCarregamentoDados.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import javax.persistence.Entity;
@@ -10,8 +11,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
 @Entity
-public class ProfissionalEstabelecimento {
+public class ProfissionalEstabelecimento implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@SequenceGenerator(name = "profissional_estabelecimento_seq", sequenceName = "profissional_estabelecimento_seq", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "profissional_estabelecimento_seq")

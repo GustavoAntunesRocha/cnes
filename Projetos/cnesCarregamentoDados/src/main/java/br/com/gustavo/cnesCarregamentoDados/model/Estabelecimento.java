@@ -1,5 +1,6 @@
 package br.com.gustavo.cnesCarregamentoDados.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,9 +13,14 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 @Entity
-public class Estabelecimento {
+public class Estabelecimento implements Serializable{
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private long codigoCnes;
 
 	@Id
@@ -118,6 +124,12 @@ public class Estabelecimento {
 			return false;
 		Estabelecimento other = (Estabelecimento) obj;
 		return codigoCnes == other.codigoCnes;
+	}
+
+	@Override
+	public String toString() {
+		return codigoCnes + "," + codigoUnidade + "," + cnpj
+				+ "," + razaoSocial + "," + fantasia;
 	}
 
 }

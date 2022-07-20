@@ -1,10 +1,17 @@
 package br.com.gustavo.cnesCarregamentoDados.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class Estado {
+public class Estado implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	private int codigo;
@@ -44,5 +51,10 @@ public class Estado {
 
 	public void setDescricao(String descricao) {
 		Descricao = descricao;
+	}
+
+	@Override
+	public String toString() {
+		return codigo + "," + sigla + "," + Descricao;
 	}
 }

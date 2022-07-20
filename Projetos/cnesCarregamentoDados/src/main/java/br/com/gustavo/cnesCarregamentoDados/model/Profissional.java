@@ -1,5 +1,6 @@
 package br.com.gustavo.cnesCarregamentoDados.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -10,7 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 @Entity
-public class Profissional {
+public class Profissional implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	private String codigoProfissional;
@@ -83,6 +89,11 @@ public class Profissional {
 		Profissional other = (Profissional) obj;
 		return Objects.equals(cns, other.cns) && Objects.equals(codigoProfissional, other.codigoProfissional)
 				&& Objects.equals(estabelecimentos, other.estabelecimentos) && Objects.equals(nome, other.nome);
+	}
+
+	@Override
+	public String toString() {
+		return codigoProfissional + "," + nome + "," + cns;
 	}
 
 }
