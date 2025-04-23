@@ -28,11 +28,12 @@ public class Search {
 
 	public static List<Document> searchFiles(String queryString, String field, String indexLocation) {
 		Query query;
+		IndexReader indexReader = null;
 		try {
 			query = new QueryParser(field, analyzer).parse(queryString);
 
 			Directory indexDirectory = FSDirectory.open(Paths.get(indexLocation));
-			IndexReader indexReader = DirectoryReader.open(indexDirectory);
+			indexReader = DirectoryReader.open(indexDirectory);
 			IndexSearcher searcher = new IndexSearcher(indexReader);
 
 			TopScoreDocCollector collector = TopScoreDocCollector.create(20, Integer.MAX_VALUE);
@@ -49,10 +50,16 @@ public class Search {
 
 			return documents;
 		} catch (ParseException | IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("Erro na busca: " + e.getMessage());
 			e.printStackTrace();
+		} finally {
+			try {
+				if (indexReader != null) indexReader.close();
+			} catch (IOException e) {
+				System.err.println("Erro ao fechar IndexReader: " + e.getMessage());
+			}
 		}
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static List<Document> searchMultipleQueries(List<String> queries, List<String> fields,

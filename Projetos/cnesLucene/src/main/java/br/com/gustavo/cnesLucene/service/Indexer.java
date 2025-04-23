@@ -46,10 +46,14 @@ public class Indexer {
 	public static void updateIndexedVersion() {
 		try {
 			indexedVersion = "";
-			indexedVersion = Files.readString(versaoIndexadaPath);
+			if (Files.exists(versaoIndexadaPath)) {
+				indexedVersion = Files.readString(versaoIndexadaPath);
+			} else {
+				// Diretório não existe, criar estrutura
+				Files.createDirectories(versaoIndexadaPath.getParent());
+			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Erro ao ler versão indexada: " + e.getMessage());
 		}
 	}
 

@@ -15,7 +15,7 @@ public class CnesLuceneApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		if (args.length > 1) {
+		if (args.length >= 1) {
 			Indexer.updateIndexedVersion();
 			String versao = FtpClient.atualizarCnes("ftp.datasus.gov.br", "./data/arquivos/");
 			if (!versao.equals(Indexer.getIndexedVersion())) {

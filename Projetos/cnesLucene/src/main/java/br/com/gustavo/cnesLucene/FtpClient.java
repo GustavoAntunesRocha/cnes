@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -46,13 +49,23 @@ public abstract class FtpClient {
 	}
 
 	public static void downloadFile(FTPClient ftp, String source, String destination) throws IOException {
-		File file = new File(destination);
-		FileOutputStream out = new FileOutputStream(file);
-		ftp.retrieveFile(source, out);
+		// Criar diretório pai do arquivo, se não existir
+		Path localFilePath = Paths.get(destination);
+		Files.createDirectories(localFilePath.getParent());
+
+		try (FileOutputStream fos = new FileOutputStream(destination)) {
+			if (!ftp.retrieveFile(source, fos)) {
+				throw new IOException("Falha ao baixar o arquivo: " + source);
+			}
+		}
 	}
 
 	public static String atualizarCnes(String url, String diretorio) {
 		try {
+			// Criar diretórios necessários
+			Path arquivosPath = Paths.get(diretorio);
+			Files.createDirectories(arquivosPath);
+
 			FTPClient ftp = open(url, 21, "anonymous", "");
 			Collection<String> files = listFiles(ftp, "/cnes");
 			String arquivo = "BASE_DE_DADOS_CNES";
@@ -80,7 +93,7 @@ public abstract class FtpClient {
 			close(ftp);
 			return ultimaVersao;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("Erro ao conectar ao servidor FTP: " + e.getMessage());
 			e.printStackTrace();
 		}
 		return null;
