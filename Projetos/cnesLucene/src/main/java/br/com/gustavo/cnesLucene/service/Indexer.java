@@ -11,14 +11,18 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.SortedDocValuesField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.springframework.stereotype.Service;
 
 import br.com.gustavo.cnesLucene.Diretorios;
@@ -26,7 +30,7 @@ import br.com.gustavo.cnesLucene.Diretorios;
 @Service
 public class Indexer {
 
-	private static StandardAnalyzer analyzer = new StandardAnalyzer();
+	private static final Analyzer analyzer = new PortugueseAnalyzer();
 	private static IndexWriter writer;
 	private static final String indexLocation = "./data/index";
 	private static final String indexLocation_Profissionais = indexLocation + "/profissionais";
@@ -191,8 +195,10 @@ public class Indexer {
 
 				Document document = new Document();
 				String[] aux = linha.split(csvDivisor);
+				String nome = aux[2].replaceAll("\"", "");
 				document.add(new TextField("codigo-Profissional", aux[0].replaceAll("\"", ""), Field.Store.YES));
-				document.add(new TextField("nome-Profissional", aux[2].replaceAll("\"", ""), Field.Store.YES));
+				document.add(new TextField("nome-Profissional", nome, Field.Store.YES));
+				document.add(new SortedDocValuesField("nome-Profissional", new BytesRef(nome)));
 				document.add(new TextField("cns-Profissional", aux[3].replaceAll("\"", ""), Field.Store.YES));
 				writer.addDocument(document);
 

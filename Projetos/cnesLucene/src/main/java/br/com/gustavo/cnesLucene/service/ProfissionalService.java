@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.ScoreDoc;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,11 +40,17 @@ public class ProfissionalService {
 		return profissionais;
 	}
 
-	public List<Document> buscaPorNome(String nomeProfissional) {
+	public List<Document> buscaPorNome(String nomeProfissional, int page, int pageSize, String sort) {
 		String query = "nome-Profissional:" + nomeProfissional;
-		List<Document> profissionais = Search.searchFiles(query, "nome-Profissional",
-				Indexer.getIndexlocationProfissionais());
-		return profissionais;
+		return Search.searchFilesPaginated(query, "nome-Profissional",
+				Indexer.getIndexlocationProfissionais(), page, pageSize, sort);
 	}
+
+	public List<Document> buscaPorNomeScroll(String nomeProfissional, ScoreDoc lastDoc, int pageSize) {
+		String query = "nome-Profissional:" + nomeProfissional;
+		return Search.searchFilesScroll(query, "nome-Profissional",
+				Indexer.getIndexlocationProfissionais(), lastDoc, pageSize);
+	}
+
 
 }

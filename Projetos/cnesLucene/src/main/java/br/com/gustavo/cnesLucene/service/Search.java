@@ -5,18 +5,15 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.stereotype.Service;
@@ -24,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class Search {
 
-	private static StandardAnalyzer analyzer = new StandardAnalyzer();
+	private static final Analyzer analyzer = new PortugueseAnalyzer();
 
 	public static List<Document> searchFiles(String queryString, String field, String indexLocation) {
 		Query query;
@@ -61,6 +58,75 @@ public class Search {
 		}
 		return new ArrayList<>();
 	}
+
+	public static List<Document> searchFilesPaginated(
+			String queryString,
+			String field,
+			String indexLocation,
+			int page,
+			int pageSize,
+			String sortType) {
+		try {
+			Query query = new QueryParser(field, analyzer).parse(queryString);
+
+			Directory indexDirectory = FSDirectory.open(Paths.get(indexLocation));
+			try (IndexReader indexReader = DirectoryReader.open(indexDirectory)) {
+				IndexSearcher searcher = new IndexSearcher(indexReader);
+
+				Sort sort;
+				if ("alpha".equalsIgnoreCase(sortType)) {
+					sort = new Sort(new SortField(field, SortField.Type.STRING, false)); // A→Z
+				} else {
+					sort = Sort.RELEVANCE;
+				}
+
+				int start = (page - 1) * pageSize;
+				TopDocs topDocs = searcher.search(query, start + pageSize, sort);
+
+				List<Document> documents = new ArrayList<>();
+				ScoreDoc[] hits = topDocs.scoreDocs;
+
+				for (int i = start; i < Math.min(start + pageSize, hits.length); i++) {
+					documents.add(searcher.doc(hits[i].doc));
+				}
+
+				return documents;
+			}
+		} catch (ParseException | IOException e) {
+			System.err.println("Erro na busca: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return new ArrayList<>();
+	}
+
+
+	public static List<Document> searchFilesScroll(String queryString, String field, String indexLocation, ScoreDoc lastDoc, int pageSize) {
+		try {
+			Query query = new QueryParser(field, analyzer).parse(queryString);
+
+			Directory indexDirectory = FSDirectory.open(Paths.get(indexLocation));
+			try (IndexReader indexReader = DirectoryReader.open(indexDirectory)) {
+				IndexSearcher searcher = new IndexSearcher(indexReader);
+
+				// Se lastDoc for null, começa do início
+				TopDocs topDocs = searcher.searchAfter(lastDoc, query, pageSize);
+
+				List<Document> documents = new ArrayList<>();
+				for (ScoreDoc sd : topDocs.scoreDocs) {
+					documents.add(searcher.doc(sd.doc));
+				}
+
+				return documents;
+			}
+		} catch (ParseException | IOException e) {
+			System.err.println("Erro na busca: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return new ArrayList<>();
+	}
+
+
+
 
 	public static List<Document> searchMultipleQueries(List<String> queries, List<String> fields,
 			String indexTypeLocation) {

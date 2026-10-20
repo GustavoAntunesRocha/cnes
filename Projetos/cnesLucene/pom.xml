@@ -43,6 +43,13 @@
 			<artifactId>lucene-core</artifactId>
 			<version>9.3.0</version>
 		</dependency>
+		<!-- Source: https://mvnrepository.com/artifact/org.apache.lucene/lucene-analysis-common -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analysis-common</artifactId>
+			<version>10.5.1</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queryparser</artifactId>
