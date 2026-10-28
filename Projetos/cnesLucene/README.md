@@ -34,6 +34,10 @@ Para executar apenas o servidor sem atualizar a base:
 java -jar target/cnesLucene-0.0.1-SNAPSHOT.jar
 ```
 
+As métricas do download são registradas pelo Actuator. Para consultá-las, habilite
+o endpoint de métricas e acesse `cnes.download.duration`, `cnes.download.total`
+ou `cnes.download.bytes` em `/actuator/metrics`.
+
 ## Endpoints da API
 
 ### Profissionais
@@ -79,6 +83,47 @@ GET /estabelecimento/busca/codigoProfissional/{codigo}
 ```
 
 Retorna todos os estabelecimentos onde o profissional com o código especificado trabalha.
+
+#### Buscar estabelecimentos por atributo
+
+```
+GET /estabelecimento/busca/codigoCnes/{codigo}
+GET /estabelecimento/busca/codigoUnidade/{codigo}
+GET /estabelecimento/busca/cnpj/{cnpj}
+GET /estabelecimento/busca/razaoSocial/{razaoSocial}
+GET /estabelecimento/busca/fantasia/{fantasia}
+GET /estabelecimento/busca/endereco/{endereco}
+GET /estabelecimento/busca/profissionais/{codigo}
+```
+
+O endpoint com `{endereco}` mantém a busca textual ampla: o texto informado
+é pesquisado em todas as propriedades indexadas do endereço.
+
+Também é possível combinar propriedades do endereço usando parâmetros de
+consulta:
+
+```
+GET /estabelecimento/busca/endereco?logradouro=Rua%20das%20Flores&municipio=Goi%C3%A2nia
+GET /estabelecimento/busca/endereco?logradouro=Avenida%20Brasil&estado=GO
+GET /estabelecimento/busca/endereco?bairro=Centro&cep=74000-000
+```
+
+Todos os parâmetros informados são combinados com AND. Os campos disponíveis
+são `logradouro`, `numero`, `complemento`, `bairro`, `cep`, `municipio`,
+`estado`, `telefone` e `email`. Município e estado são resolvidos pelo índice
+de municípios antes da busca no índice de estabelecimentos.
+
+Para combinar razão social ou nome fantasia com o endereço, use:
+
+```
+GET /estabelecimento/busca/combinada?razaoSocial=Hospital&logradouro=Rua%20das%20Flores&municipio=Goi%C3%A2nia
+GET /estabelecimento/busca/combinada?fantasia=Municipal&bairro=Centro&estado=GO
+GET /estabelecimento/busca/combinada?razaoSocial=Hospital&fantasia=Municipal&cep=74000-000
+```
+
+Os critérios `razaoSocial`, `fantasia` e os critérios de endereço são
+combinados com `AND`; portanto, o estabelecimento precisa atender a todos os
+parâmetros informados.
 
 ## Estrutura de Dados
 

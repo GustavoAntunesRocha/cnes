@@ -281,6 +281,7 @@ public class Indexer {
 				Document document = new Document();
 
 				document.add(new TextField("codigo-Estabelecimento", aux[0].replaceAll("\"", ""), Field.Store.YES));
+				document.add(new TextField("codigoUnidade-Estabelecimento", aux[0].replaceAll("\"", ""), Field.Store.YES));
 				document.add(new TextField("cnes-Estabelecimento", aux[1].replaceAll("\"", ""), Field.Store.YES));
 				document.add(new TextField("cnpj-Estabelecimento", aux[2].replaceAll("\"", ""), Field.Store.YES));
 				document.add(

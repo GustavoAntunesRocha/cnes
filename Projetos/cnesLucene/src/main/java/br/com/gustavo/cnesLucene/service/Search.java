@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
@@ -165,6 +166,30 @@ public class Search {
 		}
 
 		return null;
+	}
+
+	public static List<Document> searchByFields(Map<String, String> fields, String indexLocation) {
+		try {
+			BooleanQuery.Builder builder = new BooleanQuery.Builder();
+			for (Map.Entry<String, String> entry : fields.entrySet()) {
+				Query query = new QueryParser(entry.getKey(), analyzer).parse(entry.getValue());
+				builder.add(query, BooleanClause.Occur.MUST);
+			}
+
+			try (IndexReader indexReader = DirectoryReader.open(FSDirectory.open(Paths.get(indexLocation)))) {
+				IndexSearcher searcher = new IndexSearcher(indexReader);
+				TopDocs topDocs = searcher.search(builder.build(), 20);
+				List<Document> documents = new ArrayList<>();
+				for (ScoreDoc hit : topDocs.scoreDocs) {
+					documents.add(searcher.doc(hit.doc));
+				}
+				return documents;
+			}
+		} catch (ParseException | IOException e) {
+			System.err.println("Erro na busca por campos: " + e.getMessage());
+			e.printStackTrace();
+			return new ArrayList<>();
+		}
 	}
 
 }
